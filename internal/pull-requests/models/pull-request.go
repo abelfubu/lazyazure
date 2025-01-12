@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/atotto/clipboard"
@@ -46,7 +47,14 @@ func (i PullRequest) Title() string {
 }
 
 func (i PullRequest) Description() string {
-	return fmt.Sprintf("(%s) %s", i.Status, i.CreatedBy.DisplayName)
+	date, err := time.Parse(time.RFC3339, i.CreationDate)
+	if err != nil {
+		fmt.Println("Error parsing date:", err)
+		return fmt.Sprintf("%s - %s", i.CreatedBy.DisplayName, i.CreationDate)
+	}
+
+	formattedDate := date.Format("January 2, 2006")
+	return fmt.Sprintf("%s - %s", i.CreatedBy.DisplayName, formattedDate)
 }
 
 func (i PullRequest) FilterValue() string {
